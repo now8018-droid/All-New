@@ -1,0 +1,125 @@
+@media screen and (min-width: 2440px) and (height: 1440px) {
+    .container {
+        max-width: 2440px;
+        max-height: 1440px;
+        position: relative;
+        margin-left: calc((100% - 2440px)/2)
+    }
+}
+
+@media screen and (min-width: 2440px) and (height: 1080px) {
+    .container {
+        max-width: 1920px;
+        max-height: 1080px;
+        position: relative;
+        margin-left: calc((100% - 1920px)/2)
+    }
+}
+
+:root {
+    --primary-color: #ff6005;
+    --scale: 1;
+    --borderScale: 1;
+    --baseH: 1080;
+    --px-to-vh: calc(1vh / var(--baseH) * 100 * var(--scale))
+}
+
+::-webkit-scrollbar {
+    width: 0;
+    opacity: 0
+}
+
+*,
+*:before,
+*:after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
+    font-family: Kanit, sans-serif;
+    overflow: hidden;
+    transition: ease .15s
+}
+
+.containerNa.svelte-itz3mi.svelte-itz3mi {
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: calc(var(--px-to-vh) * 8);
+    font-family: Inter
+}
+
+.box_bottom.svelte-itz3mi.svelte-itz3mi {
+    width: calc(var(--px-to-vh) * 32);
+    height: calc(var(--px-to-vh) * 32);
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMESURBVHgBjVdLlhoxDGw3vYUl703OCdyBzwm4Ts6RRTbJHrYBp9Wj8pTLMozfmzFty1KpJNtyul6vv2+327/hTTufz3+tz3NLc+PexsdxHJ7P54Dfu93uxzudm81mSpfL5dfpdPpjA5Fi/s2Nh2aRRjkAJZ+EXpbZ7/cfI4TZOCuBseiPwdifGcQ42GDwrr9yZpLJRF6lx+NRFigJZgAA8b1arRo5U8m6dX7ywWUeJAjqomgGVClzL01g+bZ5YrSsZxDW27x9FgBkOKlhpRRsQbHmiI3NsklBMLP8XRjoJRp52dDnsW/W2RRAABRhL0AYQBalldeadMwGN6e2UG4hMUNgA3Nsc1SP2EjkHYPSPgIMHciPBjToiBS5wQzDUR4Mn3TnaC2D5i3NLW2325+klPdzRYB70Am5K3N+QTMn4rxFq3Nonkvex8jUAwYkFDd067w7kFV22ZIatyj2WU49gDJWsN7PiKLYt2NZY+770Vw5NyL+TBt7LnEv4ww6SrCIUeySasz+YYuo8qjhvFfaeY5B8J2gCbpsUfoIMzgCQvscMe8mJzMa6M4jr2RhM9JbjJjSSZdeyb8CM+rZzEYABEYipXrL4X4QmaWP8mlCxub4Gq1irV7aec8JTMozWOm1kvSRFA9FDHC+WA1goCR8TUg4ZNwmNeyllBmraj3Encdfgew1cS5N7wTNsBnzm60B8h0Go5zA2GiFIQ3y4upcBzs4w1MQZF5voWGAuBf4Oo6K0gHfGGPjiDsrUoBY7/3C1KvtWVVEXDQY5ebF3Je5qOjURp4XYoQh9zXXFRHV8ZUiUtaA1LMiS7mlJRkuSxfJBQDRXxWXNuZeowqGN5yAWT2E8dTZzmYO4QzfBXqwJ7op8dqhnGj2d88w9PKLqQCwisUuFyDncDDVnAfRWRA1eD187awiXAAAFSlntAMx1TWW5DFCaxbjnGsNAAiCKk4oDs9AMe8AWpbwOu8XEFbAcjiSPc/v93v3eY5kPB6P5QXNYEku0zmRDofDhwKFPrT1ej39B6H3ZgIbDnELAAAAAElFTkSuQmCC);
+    background-size: 100% 100%
+}
+
+.box_bottom.svelte-itz3mi span.svelte-itz3mi {
+    color: #fff;
+    font-size: calc(var(--px-to-vh) * 14);
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: calc(var(--px-to-vh) * .8)
+}
+
+.box_text_1.svelte-itz3mi.svelte-itz3mi {
+    height: calc(var(--px-to-vh) * 32);
+    padding: calc(var(--px-to-vh) * 6) calc(var(--px-to-vh) * 16);
+    background: #00000080
+}
+
+.box_text_1.svelte-itz3mi span.svelte-itz3mi {
+    color: #fff;
+    text-align: center;
+    text-shadow: 0px 0px calc(var(--px-to-vh) * 10) rgba(0, 0, 0, .5);
+    font-size: calc(var(--px-to-vh) * 11);
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: calc(var(--px-to-vh) * .55)
+}
+
+.box_bottom_2.svelte-itz3mi.svelte-itz3mi {
+    width: calc(var(--px-to-vh) * 32);
+    height: calc(var(--px-to-vh) * 32);
+    background: #c9a775
+}
+
+.box_bottom_2.svelte-itz3mi span.svelte-itz3mi {
+    color: #0d0d0d;
+    font-size: calc(var(--px-to-vh) * 14);
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: calc(var(--px-to-vh) * .8)
+}
+
+.box_text_2.svelte-itz3mi.svelte-itz3mi {
+    height: calc(var(--px-to-vh) * 32);
+    padding: calc(var(--px-to-vh) * 6) calc(var(--px-to-vh) * 16);
+    border: calc(var(--px-to-vh) * 2) solid rgba(201, 167, 117, .25);
+    background: linear-gradient(0deg, #c9a7751a, #c9a7751a), #00000080
+}
+
+.box_text_2.svelte-itz3mi span.svelte-itz3mi {
+    color: #c9a775;
+    text-align: center;
+    text-shadow: 0px 0px calc(var(--px-to-vh) * 10) rgba(0, 0, 0, .5);
+    font-size: calc(var(--px-to-vh) * 11);
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: calc(var(--px-to-vh) * .55)
+}
