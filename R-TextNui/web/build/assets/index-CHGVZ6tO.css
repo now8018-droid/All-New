@@ -58,6 +58,67 @@
     font-family: Inter
 }
 
+.containerNa {
+    padding: 0;
+    margin: 0;
+    display: inline-flex;
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: calc(var(--px-to-vh) * 8);
+    font-family: Inter;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    pointer-events: none
+}
+
+.text-nui-item {
+    opacity: 0;
+    transform: translateY(calc(var(--px-to-vh) * 12)) scale(.96);
+    filter: blur(calc(var(--px-to-vh) * 2));
+    transform-origin: center bottom;
+    will-change: transform, opacity, filter
+}
+
+.text-nui-item.is-visible {
+    animation: textNuiEnter .24s cubic-bezier(.22, 1, .36, 1) forwards
+}
+
+.text-nui-item.is-leaving {
+    animation: textNuiExit .22s cubic-bezier(.55, .085, .68, .53) forwards
+}
+
+@keyframes textNuiEnter {
+    0% {
+        opacity: 0;
+        transform: translateY(calc(var(--px-to-vh) * 12)) scale(.96);
+        filter: blur(calc(var(--px-to-vh) * 2))
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0)
+    }
+}
+
+@keyframes textNuiExit {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0)
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(calc(var(--px-to-vh) * 8)) scale(.97);
+        filter: blur(calc(var(--px-to-vh) * 2))
+    }
+}
+
+.box_bottom,
 .box_bottom.svelte-itz3mi.svelte-itz3mi {
     width: calc(var(--px-to-vh) * 32);
     height: calc(var(--px-to-vh) * 32);
@@ -65,6 +126,7 @@
     background-size: 100% 100%
 }
 
+.box_bottom span,
 .box_bottom.svelte-itz3mi span.svelte-itz3mi {
     color: #fff;
     font-size: calc(var(--px-to-vh) * 14);
@@ -74,12 +136,14 @@
     letter-spacing: calc(var(--px-to-vh) * .8)
 }
 
+.box_text_1,
 .box_text_1.svelte-itz3mi.svelte-itz3mi {
     height: calc(var(--px-to-vh) * 32);
     padding: calc(var(--px-to-vh) * 6) calc(var(--px-to-vh) * 16);
     background: #00000080
 }
 
+.box_text_1 span,
 .box_text_1.svelte-itz3mi span.svelte-itz3mi {
     color: #fff;
     text-align: center;
@@ -91,12 +155,14 @@
     letter-spacing: calc(var(--px-to-vh) * .55)
 }
 
+.box_bottom_2,
 .box_bottom_2.svelte-itz3mi.svelte-itz3mi {
     width: calc(var(--px-to-vh) * 32);
     height: calc(var(--px-to-vh) * 32);
     background: #c9a775
 }
 
+.box_bottom_2 span,
 .box_bottom_2.svelte-itz3mi span.svelte-itz3mi {
     color: #0d0d0d;
     font-size: calc(var(--px-to-vh) * 14);
@@ -106,6 +172,7 @@
     letter-spacing: calc(var(--px-to-vh) * .8)
 }
 
+.box_text_2,
 .box_text_2.svelte-itz3mi.svelte-itz3mi {
     height: calc(var(--px-to-vh) * 32);
     padding: calc(var(--px-to-vh) * 6) calc(var(--px-to-vh) * 16);
@@ -113,6 +180,7 @@
     background: linear-gradient(0deg, #c9a7751a, #c9a7751a), #00000080
 }
 
+.box_text_2 span,
 .box_text_2.svelte-itz3mi span.svelte-itz3mi {
     color: #c9a775;
     text-align: center;

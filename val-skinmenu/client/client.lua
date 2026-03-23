@@ -52,6 +52,7 @@ local skinPositionByName = {}
 local PlayerPedCache = PlayerPedId()
 local resourceConfig = Config.ExportResources or {}
 local textUIResource = resourceConfig.textUI or ''
+local textUIResourceId = ('%s:text-ui'):format(GetCurrentResourceName())
 local inventoryResource = resourceConfig.inventory or ''
 local notifyResource = resourceConfig.notify or ''
 local carHUDResource = resourceConfig.carHUD or ''
@@ -215,10 +216,14 @@ local function showSkinMenuTextUI(keyText, text)
 	end
 
 	if isStartedResource(textUIResource) then
-		exports[textUIResource]:open({
-			key = safeKey,
-			text = safeText
-		})
+		if textUIResource == 'R-TextNui' then
+			exports[textUIResource]:addText(textUIResourceId, safeText, safeKey, 1)
+		else
+			exports[textUIResource]:open({
+				key = safeKey,
+				text = safeText
+			})
+		end
 	end
 
 	skinMenuTextUiState.isOpen = true
@@ -232,7 +237,11 @@ local function hideSkinMenuTextUI()
 	end
 
 	if isStartedResource(textUIResource) then
-		exports[textUIResource]:close()
+		if textUIResource == 'R-TextNui' then
+			exports[textUIResource]:deleteText(textUIResourceId)
+		else
+			exports[textUIResource]:close()
+		end
 	end
 	skinMenuTextUiState.isOpen = false
 	skinMenuTextUiState.key = nil
