@@ -1128,8 +1128,11 @@ function ScriptWork()
     local TargetCamCoords = nil
     local CurrentFocusCoords = nil
     local TargetFocusCoords = nil
+    local CurrentCameraFov = nil
+    local TargetCameraFov = nil
     local CAMERA_POSITION_SMOOTHING = 0.18
     local CAMERA_FOCUS_SMOOTHING = 0.22
+    local CAMERA_FOV_SMOOTHING = 0.16
 
     local function LerpNumber(current, target, alpha)
         return current + ((target - current) * alpha)
@@ -1150,6 +1153,10 @@ function ScriptWork()
 
         SetCamCoord(Cam, CurrentCamCoords.x, CurrentCamCoords.y, CurrentCamCoords.z)
         PointCamAtCoord(Cam, CurrentFocusCoords.x, CurrentFocusCoords.y, CurrentFocusCoords.z)
+
+        if CurrentCameraFov then
+            SetCamFov(Cam, CurrentCameraFov)
+        end
     end
 
     local function ResolveCameraCollision(focusCoords, desiredCoords, ignoreEntity)
@@ -1198,10 +1205,12 @@ function ScriptWork()
 
         TargetCamCoords = finalCoords
         TargetFocusCoords = focusCoords
+        TargetCameraFov = cfgcam.fov
 
-        if forceSnap or not CurrentCamCoords or not CurrentFocusCoords then
+        if forceSnap or not CurrentCamCoords or not CurrentFocusCoords or not CurrentCameraFov then
             CurrentCamCoords = finalCoords
             CurrentFocusCoords = focusCoords
+            CurrentCameraFov = cfgcam.fov
             ApplyCameraTransform()
         end
 
@@ -1210,18 +1219,21 @@ function ScriptWork()
 
 	function SetCamera(pos)
 		if Config["CameraPos"][pos] then
-			DestroyCam(Cam, false)
+            local isNewCamera = Cam == nil
             CameraYawOffset = 0.0
             ActiveCameraPos = pos
 
 			local playerPed = PlayerPedId()
-			local cfgcam = Config["CameraPos"][pos]
-			Cam = CreateCameraWithParams('DEFAULT_SCRIPTED_CAMERA', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 50.0, false, 0)
-            CurrentCamCoords = nil
-            TargetCamCoords = nil
-            CurrentFocusCoords = nil
-            TargetFocusCoords = nil
-            UpdateCameraPosition(true)
+			if isNewCamera then
+			    Cam = CreateCameraWithParams('DEFAULT_SCRIPTED_CAMERA', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 50.0, false, 0)
+                CurrentCamCoords = nil
+                TargetCamCoords = nil
+                CurrentFocusCoords = nil
+                TargetFocusCoords = nil
+                CurrentCameraFov = nil
+                TargetCameraFov = nil
+            end
+            UpdateCameraPosition(isNewCamera)
 			-- AttachCamToPedBone(Cam,playerPed, 0 , 6.0, 0.0, 0.0 ,false)
 
 			CenterHeading = GetEntityHeading(playerPed)
@@ -1232,10 +1244,11 @@ function ScriptWork()
 				LightCamera(coords)
 			end
 
-			SetCamFov(Cam, cfgcam.fov)
-			SetCamActive(Cam, true)
-			RenderScriptCams(true, true, 0, true, true)
-			CameraActive = true
+            if isNewCamera then
+			    SetCamActive(Cam, true)
+			    RenderScriptCams(true, true, 250, true, true)
+			    CameraActive = true
+            end
 		end
 	end
 
@@ -1253,6 +1266,8 @@ function ScriptWork()
         TargetCamCoords = nil
         CurrentFocusCoords = nil
         TargetFocusCoords = nil
+        CurrentCameraFov = nil
+        TargetCameraFov = nil
     end
 
 	function LightCamera(coords)
@@ -1364,18 +1379,32 @@ function ScriptWork()
             else
                 Citizen.Wait(0)
 
-                CurrentCamCoords = CurrentCamCoords and LerpVector(CurrentCamCoords, TargetCamCoords, CAMERA_POSITION_SMOOTHING) or TargetCamCoords
-                CurrentFocusCoords = CurrentFocusCoords and LerpVector(CurrentFocusCoords, TargetFocusCoords, CAMERA_FOCUS_SMOOTHING) or TargetFocusCoords
+                local targetCamCoords = TargetCamCoords
+                local targetFocusCoords = TargetFocusCoords
+                local targetCameraFov = TargetCameraFov
 
-                if #(TargetCamCoords - CurrentCamCoords) < 0.002 then
-                    CurrentCamCoords = TargetCamCoords
+                if targetCamCoords and targetFocusCoords then
+                    CurrentCamCoords = CurrentCamCoords and LerpVector(CurrentCamCoords, targetCamCoords, CAMERA_POSITION_SMOOTHING) or targetCamCoords
+                    CurrentFocusCoords = CurrentFocusCoords and LerpVector(CurrentFocusCoords, targetFocusCoords, CAMERA_FOCUS_SMOOTHING) or targetFocusCoords
+
+                    if targetCameraFov then
+                        CurrentCameraFov = CurrentCameraFov and LerpNumber(CurrentCameraFov, targetCameraFov, CAMERA_FOV_SMOOTHING) or targetCameraFov
+                    end
+
+                    if #(targetCamCoords - CurrentCamCoords) < 0.002 then
+                        CurrentCamCoords = targetCamCoords
+                    end
+
+                    if #(targetFocusCoords - CurrentFocusCoords) < 0.002 then
+                        CurrentFocusCoords = targetFocusCoords
+                    end
+
+                    if targetCameraFov and CurrentCameraFov and math.abs(targetCameraFov - CurrentCameraFov) < 0.01 then
+                        CurrentCameraFov = targetCameraFov
+                    end
+
+                    ApplyCameraTransform()
                 end
-
-                if #(TargetFocusCoords - CurrentFocusCoords) < 0.002 then
-                    CurrentFocusCoords = TargetFocusCoords
-                end
-
-                ApplyCameraTransform()
             end
         end
     end)
