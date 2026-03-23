@@ -329,20 +329,20 @@ function ScriptWork()
 
 	local ListIndex = {
 
-		['sex'] = 1,['face'] = 2,['skin'] = 3,
-		['hair_1'] = 4,['hair_color_1'] = 5,
-		['torso_1'] = 6,['tshirt_1'] = 7,['decals_1'] = 8,
-		['arms'] = 9,['pants_1'] = 10,['shoes_1'] = 11,['mask_1'] = 12,
-		['bproof_1'] = 13,['chain_1'] = 14,['helmet_1'] = 15,['glasses_1'] = 16,
-		['watches_1'] = 17,['bracelets_1'] = 18,['bags_1'] = 19,['ears_1'] = 20,
-		['bodyb_1'] = 21,['blemishes_1'] = 22,['age_1'] = 23,['complexion_1'] = 24,
-		['sun_1'] = 25,['moles_1'] = 26,['eye_squint'] = 27,['eye_color'] = 28,['eyebrows_1'] = 29,
-		['eyebrows_3'] = 30,['eyebrows_5'] = 31,['makeup_1'] = 32,['makeup_3'] = 33,['lipstick_1'] = 34,
-		['lipstick_3'] = 35,['chest_1'] = 36,['blush_1'] = 37,['blush_3'] = 38,['beard_1'] = 39,['beard_3'] = 40,
-        ['nose_1'] = 41 , ['nose_2'] = 42 , ['nose_3'] = 43 , ['nose_4'] = 44 , ['nose_5'] = 45 , ['nose_6'] = 46, 
-        ['cheeks_1'] = 47 , ['cheeks_2'] = 48 , ['cheeks_3'] = 49,
-        ['lip_thickness'] = 50 , ['jaw_1'] = 51 , ['jaw_2'] = 52,
-        ['chin_1'] = 53 , ['chin_2'] = 54 , ['chin_3'] = 55 , ['chin_4'] = 56 , ['neck_thickness'] = 57,
+		['sex'] = 1,
+		['face'] = 2, ['skin'] = 3,
+		['eye_squint'] = 4, ['eye_color'] = 5,
+		['eyebrows_1'] = 6, ['eyebrows_3'] = 7, ['eyebrows_5'] = 8,
+		['makeup_1'] = 9, ['makeup_3'] = 10, ['lipstick_1'] = 11, ['lipstick_3'] = 12,
+		['chest_1'] = 13, ['blush_1'] = 14, ['blush_3'] = 15, ['beard_1'] = 16, ['beard_3'] = 17,
+		['bodyb_1'] = 18, ['blemishes_1'] = 19, ['age_1'] = 20, ['complexion_1'] = 21, ['sun_1'] = 22, ['moles_1'] = 23,
+        ['nose_1'] = 24, ['nose_2'] = 25, ['nose_3'] = 26, ['nose_4'] = 27, ['nose_5'] = 28, ['nose_6'] = 29,
+        ['cheeks_1'] = 30, ['cheeks_2'] = 31, ['cheeks_3'] = 32,
+        ['lip_thickness'] = 33, ['jaw_1'] = 34, ['jaw_2'] = 35,
+        ['chin_1'] = 36, ['chin_2'] = 37, ['chin_3'] = 38, ['chin_4'] = 39, ['neck_thickness'] = 40,
+		['hair_1'] = 41, ['hair_color_1'] = 42,
+		['torso_1'] = 43, ['tshirt_1'] = 44, ['decals_1'] = 45, ['arms'] = 46, ['pants_1'] = 47, ['shoes_1'] = 48, ['mask_1'] = 49, ['bproof_1'] = 50,
+		['chain_1'] = 51, ['helmet_1'] = 52, ['glasses_1'] = 53, ['watches_1'] = 54, ['bracelets_1'] = 55, ['bags_1'] = 56, ['ears_1'] = 57,
 	}
 
 	local ListCheck = {
@@ -1124,6 +1124,33 @@ function ScriptWork()
     local CamHeight = 0.0
     local CameraYawOffset = 0.0
     local ActiveCameraPos = nil
+    local CurrentCamCoords = nil
+    local TargetCamCoords = nil
+    local CurrentFocusCoords = nil
+    local TargetFocusCoords = nil
+    local CAMERA_POSITION_SMOOTHING = 0.18
+    local CAMERA_FOCUS_SMOOTHING = 0.22
+
+    local function LerpNumber(current, target, alpha)
+        return current + ((target - current) * alpha)
+    end
+
+    local function LerpVector(current, target, alpha)
+        return vector3(
+            LerpNumber(current.x, target.x, alpha),
+            LerpNumber(current.y, target.y, alpha),
+            LerpNumber(current.z, target.z, alpha)
+        )
+    end
+
+    local function ApplyCameraTransform()
+        if not Cam or not CurrentCamCoords or not CurrentFocusCoords then
+            return
+        end
+
+        SetCamCoord(Cam, CurrentCamCoords.x, CurrentCamCoords.y, CurrentCamCoords.z)
+        PointCamAtCoord(Cam, CurrentFocusCoords.x, CurrentFocusCoords.y, CurrentFocusCoords.z)
+    end
 
     local function ResolveCameraCollision(focusCoords, desiredCoords, ignoreEntity)
         local ray = StartShapeTestRay(
@@ -1152,7 +1179,7 @@ function ScriptWork()
         return desiredCoords, false
     end
 
-    local function UpdateCameraPosition()
+    local function UpdateCameraPosition(forceSnap)
         if not ActiveCameraPos or not Cam or not Config["CameraPos"][ActiveCameraPos] then
             return
         end
@@ -1169,8 +1196,15 @@ function ScriptWork()
         local desiredCoords = vector3(camX, camY, camZ)
         local finalCoords = ResolveCameraCollision(focusCoords, desiredCoords, playerPed)
 
-        SetCamCoord(Cam, finalCoords.x, finalCoords.y, finalCoords.z)
-        PointCamAtCoord(Cam, focusCoords.x, focusCoords.y, focusCoords.z)
+        TargetCamCoords = finalCoords
+        TargetFocusCoords = focusCoords
+
+        if forceSnap or not CurrentCamCoords or not CurrentFocusCoords then
+            CurrentCamCoords = finalCoords
+            CurrentFocusCoords = focusCoords
+            ApplyCameraTransform()
+        end
+
         CamHeight = cfgcam.height
     end
 
@@ -1183,7 +1217,11 @@ function ScriptWork()
 			local playerPed = PlayerPedId()
 			local cfgcam = Config["CameraPos"][pos]
 			Cam = CreateCameraWithParams('DEFAULT_SCRIPTED_CAMERA', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 50.0, false, 0)
-            UpdateCameraPosition()
+            CurrentCamCoords = nil
+            TargetCamCoords = nil
+            CurrentFocusCoords = nil
+            TargetFocusCoords = nil
+            UpdateCameraPosition(true)
 			-- AttachCamToPedBone(Cam,playerPed, 0 , 6.0, 0.0, 0.0 ,false)
 
 			CenterHeading = GetEntityHeading(playerPed)
@@ -1211,6 +1249,10 @@ function ScriptWork()
         Cam = nil
         ActiveCameraPos = nil
         CameraYawOffset = 0.0
+        CurrentCamCoords = nil
+        TargetCamCoords = nil
+        CurrentFocusCoords = nil
+        TargetFocusCoords = nil
     end
 
 	function LightCamera(coords)
@@ -1311,6 +1353,29 @@ function ScriptWork()
                 local direction = pedCoords - camCoords
                 local normal = V3SetNormalize(direction)
                 DrawSpotLight(camCoords.x, camCoords.y, camCoords.z, normal.x, normal.y, normal.z, 255, 255, 255, 10.0, brightness, 0.0, 10.0, 1.0)
+            end
+        end
+    end)
+
+    Citizen.CreateThread(function()
+        while true do
+            if not CameraActive or not Cam or not TargetCamCoords or not TargetFocusCoords then
+                Citizen.Wait(100)
+            else
+                Citizen.Wait(0)
+
+                CurrentCamCoords = CurrentCamCoords and LerpVector(CurrentCamCoords, TargetCamCoords, CAMERA_POSITION_SMOOTHING) or TargetCamCoords
+                CurrentFocusCoords = CurrentFocusCoords and LerpVector(CurrentFocusCoords, TargetFocusCoords, CAMERA_FOCUS_SMOOTHING) or TargetFocusCoords
+
+                if #(TargetCamCoords - CurrentCamCoords) < 0.002 then
+                    CurrentCamCoords = TargetCamCoords
+                end
+
+                if #(TargetFocusCoords - CurrentFocusCoords) < 0.002 then
+                    CurrentFocusCoords = TargetFocusCoords
+                end
+
+                ApplyCameraTransform()
             end
         end
     end)

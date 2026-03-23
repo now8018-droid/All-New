@@ -57,9 +57,36 @@ ESX.RegisterServerCallback("esx_skin:getPlayerSkin", function(source, cb)
     end)
 end)
 
-ESX.RegisterCommand("skin", "admin", function(xPlayer, args)
-    if not args.playerId then
-        args.playerId = xPlayer
+RegisterCommand("skin", function(source, args)
+    if source == 0 then
+        return
     end
-    args.playerId.triggerEvent("esx_skin:openSaveableMenu")
-end, false, { help = TranslateCap("skin"), arguments = { { name = "playerId", help = TranslateCap("skin"), type = "player" }} })
+
+    local xPlayer = ESX.Player(source)
+    if not xPlayer then
+        return
+    end
+
+    local targetId = tonumber(args[1]) or source
+    local targetPlayer = ESX.Player(targetId)
+    if not targetPlayer then
+        if xPlayer.showNotification then
+            xPlayer.showNotification("ไม่พบผู้เล่นที่ต้องการเปิดเมนู /skin")
+        end
+        return
+    end
+
+    if targetId ~= source then
+        local group = xPlayer.getGroup and xPlayer.getGroup() or "user"
+        local isAdmin = group == "admin" or group == "superadmin"
+
+        if not isAdmin then
+            if xPlayer.showNotification then
+                xPlayer.showNotification("คุณไม่มีสิทธิ์เปิดเมนู /skin ให้ผู้เล่นอื่น")
+            end
+            return
+        end
+    end
+
+    targetPlayer.triggerEvent("val-skinmenu:OpenMenuByType", "default")
+end, false)
